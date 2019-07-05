@@ -1,4 +1,4 @@
-#### 可折叠Label
+### 可折叠Label
 
 实现原理基于CoreText
 
