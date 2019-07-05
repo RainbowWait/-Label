@@ -65,21 +65,14 @@ NSLog(@"翻转后context的变换矩阵 %@", NSStringFromCGAffineTransform(CGCon
 - 方法二 
 
 ```objc
-//因为Core Text要配合Core Graphic 配合使用的，如Core Graphic一样，绘图的时候需要获得当前的上下文进行绘制 
-
-CGContextRef context = UIGraphicsGetCurrentContext(); 
-
-NSLog(@"当前context的变换矩阵 %@", NSStringFromCGAffineTransform(CGContextGetCTM(context))); 
-
-//翻转当前的坐标系（因为对于底层绘制引擎来说，屏幕左下角为（0，0）） 
-
-CGContextSetTextMatrix(context, CGAffineTransformIdentity);//设置字形变换矩阵为CGAffineTransformIdentity，也就是说每一个字形都不做图形变换 
-
-CGAffineTransform flipVertical = CGAffineTransformMake(1,0,0,-1,0,self.bounds.size.height); 
-
-CGContextConcatCTM(context, flipVertical);//将当前context的坐标系进行flip 
-
-NSLog(@"翻转后context的变换矩阵 %@", NSStringFromCGAffineTransform(CGContextGetCTM(context))); 
+//因为Core Text要配合Core Graphic 配合使用的，如Core Graphic一样，绘图的时候需要获得当前的上下文进行绘制
+CGContextRef context = UIGraphicsGetCurrentContext();
+NSLog(@"当前context的变换矩阵 %@", NSStringFromCGAffineTransform(CGContextGetCTM(context)));
+//翻转当前的坐标系（因为对于底层绘制引擎来说，屏幕左下角为（0，0））
+CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+CGContextTranslateCTM(context, 0, self.bounds.size.height);
+CGContextScaleCTM(context, 1.0, -1.0);
+NSLog(@"翻转后context的变换矩阵 %@", NSStringFromCGAffineTransform(CGContextGetCTM(context)));
 ```
 
  
@@ -145,7 +138,7 @@ CFArrayRef CTFrameGetLines(CTFrameRef frame);
 
 - ###### 通过帧率获取每行的位置 
 
-Orgings 传的是指针 所以该参数定义成`CGPoint origins = [lines.count]` `lines`是行数
+Origins 传的是指针 所以该参数定义成`CGPoint origins = [lines.count]` `lines`是行数
 
 ```objc
 void CTFrameGetLineOrigins(CTFrameRef frame, CFRange range, CGPoint *origins);
