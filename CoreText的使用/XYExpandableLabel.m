@@ -20,7 +20,10 @@
 @end
 
 @implementation XYExpandableLabelContentView
-
+- (void)dealloc
+{
+    NSLog(@"========================================1");
+}
 -(void)drawRect:(CGRect)rect{
 	[super drawRect:rect];
 	
@@ -53,6 +56,8 @@
 	CTFrameRef ctFrame = CTFramesetterCreateFrame(setter, CFRangeMake(0, _attributedText.length), CGPathCreateWithRect(self.bounds, nil), NULL);
 	
 	CTFrameDraw(ctFrame, context);
+    CFRelease(ctFrame);
+    CFRelease(setter);
 }
 
 @end
@@ -79,6 +84,11 @@ typedef void(^XYAttributedTextDrawCompletion)(CGFloat height, NSAttributedString
 }
 
 #pragma mark - Initial Method
+- (void)dealloc
+{
+    [NSNotificationCenter.defaultCenter removeObserver:self];
+    NSLog(@"========================================2");
+}
 -(instancetype)initWithFrame:(CGRect)frame{
 	if (self = [super initWithFrame:frame]) 
 	{
@@ -119,22 +129,19 @@ typedef void(^XYAttributedTextDrawCompletion)(CGFloat height, NSAttributedString
 -(void)drawRect:(CGRect)rect{
 	[super drawRect:rect];
 	
-	if (!_attributedText) {
+	if (!self.attributedText) {
 		return;
 	}
-	
+	__weak typeof(self)weakSelf = self;
 	[self drawTextWithCompletion:^(CGFloat height, NSAttributedString *drawAttributedText) {
-		[self addSubview:self.contentView];
-        self.contentView.frame = CGRectMake(0, 0, self.bounds.size.width, height);
-        self.contentView.backgroundColor = [UIColor clearColor];
-		self.contentView.attributedText = drawAttributedText;
-        self.action ? self.action(XYExpandableLabelActionDidCalculate, @(height)) : nil;
+		[weakSelf addSubview:weakSelf.contentView];
+        weakSelf.contentView.frame = CGRectMake(0, 0, self.bounds.size.width, height);
+        weakSelf.contentView.backgroundColor = [UIColor clearColor];
+		weakSelf.contentView.attributedText = drawAttributedText;
+        weakSelf.action ? weakSelf.action(XYExpandableLabelActionDidCalculate, @(height)) : nil;
 	}];
 }
 
--(void)dealloc{
-	[NSNotificationCenter.defaultCenter removeObserver:self];
-}
 
 #pragma mark - Setters Method
 -(void)setAttributedText:(NSAttributedString *)attributedText{
@@ -174,20 +181,20 @@ typedef void(^XYAttributedTextDrawCompletion)(CGFloat height, NSAttributedString
 #pragma mark - Action Method
 -(void)actionNotificationReceived: (NSNotification*)sender{
 	if ([sender.name isEqualToString:UIDeviceOrientationDidChangeNotification]) {
-		self.isExpanded = _isExpanded;
+		self.isExpanded = self.isExpanded;
 	}
 }
 
 -(void)actionGestureTapped: (UITapGestureRecognizer*)sender{
 	if (CGRectContainsPoint(_clickArea, [sender locationInView:self])) {
-		self.isExpanded = !_isExpanded;
+		self.isExpanded = !self.isExpanded;
 		self.action ? self.action(XYExpandableLabelActionClick, @(self.contentView.frame.size.height)) : nil;
 	}
 }
 
 #pragma mark - Private Method
 -(void)drawTextWithCompletion: (XYAttributedTextDrawCompletion)completion{
-	_isExpanded
+	self.isExpanded
 	? [self calculateFullTextWithCompletion:completion] 
 	: [self calculatePartialTextWithCompletion:completion];
 }
@@ -244,11 +251,15 @@ typedef void(^XYAttributedTextDrawCompletion)(CGFloat height, NSAttributedString
 			CGFloat h = moreSize.height ;
 			self.clickArea = CGRectMake(w, totalHeight - h, moreSize.width, h);
 
+            CFRelease(moreLine);
 		}
        
 	}
 	
-	completion(totalHeight, drawAttributedText);
+    CFRelease(ctFrame);
+    CFRelease(path);
+    CFRelease(setter);
+    completion(totalHeight, drawAttributedText);
 }
 - (void)addGlobalAttributeWithContent:(NSMutableAttributedString *)aContent font:(UIFont *)aFont
 {
@@ -315,8 +326,6 @@ typedef void(^XYAttributedTextDrawCompletion)(CGFloat height, NSAttributedString
 		}
         //获取行
 		CTLineRef line = (__bridge CTLineRef)lines[i];
-        CGPoint origin = origins[i];
-
         //获取该行的在整个attributed的范围
 		CFRange range = CTLineGetStringRange(line);
         //截取这一行的text
@@ -338,36 +347,22 @@ typedef void(^XYAttributedTextDrawCompletion)(CGFloat height, NSAttributedString
 					self.clickArea = CGRectMake(self.bounds.size.width-moreSize.width, totalHeight, moreSize.width, moreSize.height);
 					
 					totalHeight += [self heightForCTLine:line];
+                    CFRelease(moreLine);
 					break;
 				}
 			}
+            CFRelease(line);
+            
 		} else {
 			[drawAttributedText appendAttributedString:subAttr];
 			
 			totalHeight += [self heightForCTLine:line];
 		}
 	}
-	
 	completion(totalHeight, drawAttributedText);
-}
-- (void)setStyleToAttributeString:(NSMutableAttributedString *)attributeString {
-    CTTextAlignment textAlignment = kCTTextAlignmentJustified;
-    CGFloat lineSpacing = 5;
-    CGFloat paragraphSpacing = 0;
-//    CTLineBreakMode breakMode = kCTLineBreakByTruncatingTail;
-    CTParagraphStyleSetting settings[] =
-    {
-       
-        {kCTParagraphStyleSpecifierAlignment,sizeof(textAlignment),&textAlignment},
-        {kCTParagraphStyleSpecifierMaximumLineSpacing,sizeof(lineSpacing),&lineSpacing},
-        {kCTParagraphStyleSpecifierMinimumLineSpacing,sizeof(lineSpacing),&lineSpacing},
-        {kCTParagraphStyleSpecifierParagraphSpacing,sizeof(paragraphSpacing),&paragraphSpacing},
-    };
-    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(settings, sizeof(settings) / sizeof(settings[0]));
-    [attributeString addAttribute:(id)kCTParagraphStyleAttributeName
-                            value:(__bridge id)paragraphStyle
-                            range:NSMakeRange(0, [attributeString length])];
-    CFRelease(paragraphStyle);
+//    CFRelease(ctFrame);
+    CFRelease(setter);
+    CFRelease(path);
 }
 
 -(CGFloat)heightForCTLine: (CTLineRef)line{
@@ -386,6 +381,9 @@ typedef void(^XYAttributedTextDrawCompletion)(CGFloat height, NSAttributedString
 	CTFramesetterRef setter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)text);
 	CTFrameRef ctFrame = CTFramesetterCreateFrame(setter, CFRangeMake(0, text.length), path, nil);
 	NSArray *lines = (NSArray*)CTFrameGetLines(ctFrame);
+    CFRelease(ctFrame);
+    CFRelease(setter);
+    CFRelease(path);
 	return lines.count;
 }
 

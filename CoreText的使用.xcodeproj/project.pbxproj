@@ -17,6 +17,7 @@
 		04E8CA4122CDAC0B00D84E26 /* CoreText___UITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E8CA4022CDAC0B00D84E26 /* CoreText___UITests.m */; };
 		04E8CA5022CDAC3C00D84E26 /* XYExpandableLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E8CA4F22CDAC3B00D84E26 /* XYExpandableLabel.m */; };
 		04E8CA5222CDAC9C00D84E26 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 04E8CA5122CDAC9C00D84E26 /* ViewController.xib */; };
+		04E8CAC322D2DB3200D84E26 /* ViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 04E8CAC222D2DB3200D84E26 /* ViewController2.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,8 @@
 		04E8CA4E22CDAC3B00D84E26 /* XYExpandableLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XYExpandableLabel.h; sourceTree = "<group>"; };
 		04E8CA4F22CDAC3B00D84E26 /* XYExpandableLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XYExpandableLabel.m; sourceTree = "<group>"; };
 		04E8CA5122CDAC9C00D84E26 /* ViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
+		04E8CAC122D2DB3200D84E26 /* ViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController2.h; sourceTree = "<group>"; };
+		04E8CAC222D2DB3200D84E26 /* ViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController2.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +115,8 @@
 				04E8CA1D22CDAC0900D84E26 /* AppDelegate.m */,
 				04E8CA1F22CDAC0900D84E26 /* ViewController.h */,
 				04E8CA2022CDAC0900D84E26 /* ViewController.m */,
+				04E8CAC122D2DB3200D84E26 /* ViewController2.h */,
+				04E8CAC222D2DB3200D84E26 /* ViewController2.m */,
 				04E8CA5122CDAC9C00D84E26 /* ViewController.xib */,
 				04E8CA2222CDAC0900D84E26 /* Main.storyboard */,
 				04E8CA2522CDAC0B00D84E26 /* Assets.xcassets */,
@@ -273,6 +278,7 @@
 			files = (
 				04E8CA2122CDAC0900D84E26 /* ViewController.m in Sources */,
 				04E8CA2C22CDAC0B00D84E26 /* main.m in Sources */,
+				04E8CAC322D2DB3200D84E26 /* ViewController2.m in Sources */,
 				04E8CA1E22CDAC0900D84E26 /* AppDelegate.m in Sources */,
 				04E8CA5022CDAC3C00D84E26 /* XYExpandableLabel.m in Sources */,
 			);
